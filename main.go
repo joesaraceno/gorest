@@ -21,7 +21,11 @@ func handleRequests() {
 }
 
 func getArticles(w http.ResponseWriter, r *http.Request) {
-	json.NewEncoder(w).Encode(Articles)
+	a, err := getArticlesFromRepo()
+	if err != nil {
+		respondWithError(w, http.StatusInternalServerError, "Invalid article query")
+	}
+	respondWithJSON(w, http.StatusOK, a)
 }
 
 func deleteArticle(w http.ResponseWriter, r *http.Request) {
@@ -110,16 +114,9 @@ func (a *Article) getArticle() error {
 	return errors.New("not found")
 }
 
-// func (a *Article) getArticle() error {
-// 	for _, article := range Articles {
-// 		if article.Id == a.Id {
-// 			a.Desc = article.Desc
-// 			a.Title = article.Title
-// 			a.Content = article.Content
-// 		}
-// 	}
-// 	return errors.New("not found")
-// }
+func getArticlesFromRepo() ([]Article, error) {
+	return Articles, nil
+}
 
 func (a *Article) createArticle() error {
 	Articles = append(Articles, *a)
